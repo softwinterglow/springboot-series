@@ -1,6 +1,8 @@
 package com.example.SpringbootWeb.Controllers;
 
 
+import com.example.SpringbootWeb.Services.EmployeeService;
+import com.example.SpringbootWeb.dto.EmployeeDTO;
 import com.example.SpringbootWeb.entities.EmployeeEntity;
 import com.example.SpringbootWeb.repositories.EmployeeRepository;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +30,10 @@ public class EmployeeControllers {
 //        return "my first spring get request";
 //    }
 
-    private final EmployeeRepository employeerepository;
+    private final EmployeeService employeeservice;
 
-    public EmployeeControllers(EmployeeRepository employeeRepository) {
-        this.employeerepository = employeeRepository;
+    public EmployeeControllers(EmployeeService employeeservice) {
+        this.employeeservice = employeeservice;
     }
 
 
@@ -40,11 +42,10 @@ public class EmployeeControllers {
 //    Short answer: It lets you grab values from the URL path and use them as method parameters.
 
     @GetMapping("/{employeeID}")
-        public EmployeeEntity getEmployeeById(@PathVariable(name="employeeID") long id){
-            return employeerepository.findById(id).orElse(null);
+        public EmployeeDTO getEmployeeById(@PathVariable(name="employeeID") long id) {
+        return employeeservice.getEmployeeById(id);
+
     }
-
-
 
 
 
@@ -55,17 +56,19 @@ public class EmployeeControllers {
 
 
     @GetMapping
-    public List<EmployeeEntity> getAllEmployees(@RequestParam(required = false) Integer age, // now passing this is optional its upto you if you wanna pass or not
+    public List<EmployeeDTO> getAllEmployees(@RequestParam(required = false) Integer age, // now passing this is optional its upto you if you wanna pass or not
                                                 @RequestParam(required = false) String sortBy){
-        return employeerepository.findAll();
+        return employeeservice.getAllEmployees();
     }
 
 
 
 
     @PostMapping //Post is used whenever you want to create
-    public EmployeeEntity createNewEmployee(@RequestBody EmployeeEntity inputEmployee){
-       return employeerepository.save(inputEmployee);
+    public EmployeeDTO createNewEmployee(@RequestBody EmployeeEntity inputEmployee){
+//        To check if user is admin
+//        log something
+       return employeeservice.createNewEmployee(inputEmployee );
     }
 
     @PutMapping
