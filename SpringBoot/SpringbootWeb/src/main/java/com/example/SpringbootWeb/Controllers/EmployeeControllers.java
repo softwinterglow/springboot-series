@@ -1,8 +1,11 @@
 package com.example.SpringbootWeb.Controllers;
 
 
-import com.example.SpringbootWeb.dto.EmployeeDTO;
+import com.example.SpringbootWeb.entities.EmployeeEntity;
+import com.example.SpringbootWeb.repositories.EmployeeRepository;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 //@Controller is used to mark a class as a Spring MVC controller.
@@ -17,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/employees") // Now this is the parent path like the and those below are now the the children path like employees/employeeID
 
 
-public class EmployeeController {
+public class EmployeeControllers {
 
 
 //    @GetMapping("/message")
@@ -25,15 +28,25 @@ public class EmployeeController {
 //        return "my first spring get request";
 //    }
 
+    private final EmployeeRepository employeerepository;
+
+    public EmployeeControllers(EmployeeRepository employeeRepository) {
+        this.employeerepository = employeeRepository;
+    }
+
 
 //
 //    What is @PathVariable?
 //    Short answer: It lets you grab values from the URL path and use them as method parameters.
 
     @GetMapping("/{employeeID}")
-    public EmployeeDTO getEmployeeById(@PathVariable(name="employeeID") long id){
-        return new EmployeeDTO(id,"miku","miku123","miku@gmail.com");
+        public EmployeeEntity getEmployeeById(@PathVariable(name="employeeID") long id){
+            return employeerepository.findById(id).orElse(null);
     }
+
+
+
+
 
 //    @Requestparam example
 //Short answer: It grabs values from the Query String (the part of the URL after the ?) and injects them into your method.
@@ -41,17 +54,18 @@ public class EmployeeController {
 //    Imagine you want to search for employees by department or sort them.
 
 
-    @GetMapping // here this is the default path because im not appending anything
-    public String getEmployeeByAge(@RequestParam(required = false) Integer age, // now passing this is optional its upto you if you wanna pass or not
-                                   @RequestParam(required = false) String sortBy){
-        return "Hi your age is " + age +" " + sortBy;
+    @GetMapping
+    public List<EmployeeEntity> getAllEmployees(@RequestParam(required = false) Integer age, // now passing this is optional its upto you if you wanna pass or not
+                                                @RequestParam(required = false) String sortBy){
+        return employeerepository.findAll();
     }
 
+
+
+
     @PostMapping //Post is used whenever you want to create
-    public EmployeeDTO createNewEmployee(@RequestBody EmployeeDTO inputEmployee){
-        inputEmployee.setUsername("nezuko");
-        inputEmployee.setId(20L);
-        return inputEmployee;
+    public EmployeeEntity createNewEmployee(@RequestBody EmployeeEntity inputEmployee){
+       return employeerepository.save(inputEmployee);
     }
 
     @PutMapping

@@ -6,10 +6,10 @@ package com.example.SpringbootWeb.dto;
 //It does not contain business logic. Its only job is to carry data.
 //Think of it as an envelope: it just carries information; it doesn’t do anything with it.
 public class EmployeeDTO {
-     Long id;
-     String username;
-     String password; // sensitive
-     String email;
+     private Long id;
+     private String username;
+     private String password; // sensitive
+     private String email;
 
      public EmployeeDTO(){
 
