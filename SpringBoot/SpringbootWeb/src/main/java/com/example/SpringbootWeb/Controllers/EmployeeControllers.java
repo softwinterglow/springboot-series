@@ -71,9 +71,9 @@ public class EmployeeControllers {
        return employeeservice.createNewEmployee(inputEmployee );
     }
 
-    @PutMapping
-    public String updateEmployee(){
-        return "hello from put";
+    @PutMapping("/employeeId")
+    public EmployeeDTO updateEmployeeById(@RequestBody EmployeeDTO employeeDTO, @PathVariable Long employeeId){
+        return employeeservice.updateEmployeeById(employeeId);
     }
 
 
