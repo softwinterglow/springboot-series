@@ -1,19 +1,17 @@
-package come.example.ProductionReadyFeatures.config;
+package come.example.ProductionReadyFeatures.Auth;
 
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 //port java.lang.classfile.ClassFile;im
@@ -33,7 +31,7 @@ public class SecurityConfig {
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf((AbstractHttpConfigurer::disable))
                 .authorizeHttpRequests(c->
-                        c.requestMatchers("/posts","/carts").permitAll()
+                        c.requestMatchers("/posts","/carts","/auth/**").permitAll()
                                 .requestMatchers("/posts/**").hasAnyRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST,"/users").permitAll()
                                 .anyRequest().authenticated()
@@ -41,22 +39,22 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-    @Bean
-    UserDetailsService myInMemoryUserDetailsService(){
-        UserDetails normalUser = User.
-                withUsername("anuj")
-                .password(passwordEncoder().encode("Eren123"))
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User
-                .withUsername("admin")
-                .password(passwordEncoder().encode("admin123"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(normalUser, admin);
-    }
+//    @Bean
+//    UserDetailsService myInMemoryUserDetailsService(){
+//        UserDetails normalUser = User.
+//                withUsername("anuj")
+//                .password(passwordEncoder().encode("Eren123"))
+//                .roles("USER")
+//                .build();
+//
+//        UserDetails admin = User
+//                .withUsername("admin")
+//                .password(passwordEncoder().encode("admin123"))
+//                .roles("ADMIN")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(normalUser, admin);
+//    }
 
 
 
@@ -65,7 +63,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration conig) throws Exception{
+        return conig.getAuthenticationManager();
+    }
 
 
 }
