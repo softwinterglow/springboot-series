@@ -1,6 +1,8 @@
-package come.example.ProductionReadyFeatures.Auth;
+package come.example.ProductionReadyFeatures.config;
 
 
+import come.example.ProductionReadyFeatures.Filters.JwtAuthFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,28 +15,33 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 //port java.lang.classfile.ClassFile;im
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-
+private final JwtAuthFilter jwtAuthFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+
 //        Stateless sessions (token-based authentication)
 //        Disable CSRF
 //        Authorize
         httpSecurity
                 .sessionManagement(c->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf((AbstractHttpConfigurer::disable))
                 .authorizeHttpRequests(c->
                         c.requestMatchers("/posts","/carts","/auth/**").permitAll()
-                                .requestMatchers("/posts/**").hasAnyRole("ADMIN")
+//                                .requestMatchers("/posts/**").authenticated()
                                 .requestMatchers(HttpMethod.POST,"/users").permitAll()
                                 .anyRequest().authenticated()
+
                 );
         return httpSecurity.build();
     }
@@ -58,10 +65,7 @@ public class SecurityConfig {
 
 
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration conig) throws Exception{
