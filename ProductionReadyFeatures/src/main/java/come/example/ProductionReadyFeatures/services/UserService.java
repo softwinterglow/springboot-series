@@ -1,7 +1,7 @@
 package come.example.ProductionReadyFeatures.services;
 
 import come.example.ProductionReadyFeatures.Exceptions.ResourceNotFoundException;
-import come.example.ProductionReadyFeatures.dto.LoginDto;
+
 import come.example.ProductionReadyFeatures.dto.SignUpDto;
 import come.example.ProductionReadyFeatures.dto.UserDto;
 import come.example.ProductionReadyFeatures.entities.User;
@@ -28,7 +28,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
-                .orElseThrow(()-> new ResourceNotFoundException("user not found with this email "+ username));
+                .orElseThrow(()-> new BadCredentialsException("user not found with this email "+ username));
     }
 
     public User getUserById(Long userId){
